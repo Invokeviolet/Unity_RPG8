@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using System;
 using UnityEngine.Windows;
+using Unity.VisualScripting;
 
 public class UIManager : MonoBehaviour
 {
@@ -93,18 +94,26 @@ public class UIManager : MonoBehaviour
                      Instance = new GameObject("UIManager").AddComponent<UIManager>();
                  }*/
             }
-            DontDestroyOnLoad(Instance.gameObject);
+            // DontDestroyOnLoad(Instance.gameObject);
             return Instance;
         }
     }
     #endregion
 
-    Action action;
+    // Action action;
+
+    public Action ingame;
+    public Action action;
+    public Action store;
 
     private void Awake()
     {
-        action += BUYPOTION;
-        BuyButton.onClick.AddListener(delegate () { action(); });
+        // action += BUYPOTION;
+        // BuyButton.onClick.AddListener(delegate () { action(); });
+
+        ingame += GENERALSCENE;
+        action += ACTIONSCENE;
+        store += STORESCENE;
 
         Player.INSTANCE.CURSTAMINAR = Player.INSTANCE.MAXSTAMINAR;
         Player_Staminar.value = Player.INSTANCE.CURSTAMINAR;
@@ -144,15 +153,19 @@ public class UIManager : MonoBehaviour
 
     }
 
-
-    // 인게임, 전투 씬
-    public void GENERALSCENE()
+    public void ChangeCanvas(int num) 
     {
         for (int i = 0; i < canvas.Length; i++)
         {
             canvas[i].gameObject.SetActive(false);
         }
-        canvas[1].gameObject.SetActive(true);
+        canvas[num].gameObject.SetActive(true);
+    }
+
+    // 인게임 UI
+    public void GENERALSCENE()
+    {
+        ChangeCanvas(1);
 
         if (inputName.text.Length >= 2 && inputName.text.Length <= 8) //&& UnityEngine.Input.GetKeyDown(KeyCode.Return)
         {
@@ -169,11 +182,15 @@ public class UIManager : MonoBehaviour
         RunButton.gameObject.SetActive(false);
 
     }
+
+    // 플레이어 이름 입력받기
     void PlayerInputName()
     {
         Player_ID.text = inputName.text;
     }
-    void UpdatePlayerInfo()
+
+    // 플레이어 정보 업데이트
+    void UpdatePlayerInfo() 
     {
         StoreGoldValue.text = Player.INSTANCE.PlayerGold.ToString();
         StorePotionValue.text = Player.INSTANCE.PlayerPotion.ToString();
@@ -181,21 +198,14 @@ public class UIManager : MonoBehaviour
         Player_Potion.text = Player.INSTANCE.PlayerPotion.ToString();
     }
 
-
-
+    // 전투 씬 UI
     public void ACTIONSCENE()
     {
-        for (int i = 0; i < canvas.Length; i++)
-        {
-            canvas[i].gameObject.SetActive(false);
-        }
-        canvas[1].gameObject.SetActive(true);
-
-        MonsterInfo.gameObject.SetActive(true);
+        ChangeCanvas(1);                
         RunButton.gameObject.SetActive(true);
     }
 
-    // 버튼을 눌렀을때 실행되는 함수
+    // 이동할지 물어보는 UI
     public void ONQUESTION()
     {
         canvas[3].gameObject.SetActive(true);
@@ -206,63 +216,47 @@ public class UIManager : MonoBehaviour
         canvas[3].gameObject.SetActive(false);
         GameManager.INSTANCE.IsWindowOpen = false;
     }
-
+    
+    
+    // 상점 씬 UI
     public void STORESCENE()
     {
-        for (int i = 0; i < canvas.Length; i++)
-        {
-            canvas[i].gameObject.SetActive(false);
-        }
-        canvas[4].gameObject.SetActive(true);
+        ChangeCanvas(4);
 
         UpdatePlayerInfo();
         RunButton.gameObject.SetActive(false);
     }
 
+    // 게임 결과 UI
     public void GAMECLEARSCENE()
     {
-        for (int i = 0; i < canvas.Length; i++)
-        {
-            canvas[i].gameObject.SetActive(false);
-        }
-        canvas[5].gameObject.SetActive(true);
-
+        ChangeCanvas(5);
         RunButton.gameObject.SetActive(false);
     }
     public void GAMEOVERSCENE()
     {
-        for (int i = 0; i < canvas.Length; i++)
-        {
-            canvas[i].gameObject.SetActive(false);
-        }
-        canvas[6].gameObject.SetActive(true);
-
+        ChangeCanvas(6);
         RunButton.gameObject.SetActive(false);
     }
 
-    // 누가 죽었는지 먼저 체크해보고
-    // 몬스터가 죽었을 때는 Player WIN 창 띄워주고
-    // 플레이어가 죽었을 때는 Game Over 창 띄워주기
+    // 게임 결과 UI
     bool IsWin = false;
     public void RESULTSCENE()
     {
-        if (IsWin == true) // 플레이어 승리
+        if (IsWin == true) // 플레이어 승리 시 Win 띄워줌
         {
-            for (int i = 0; i < canvas.Length; i++)
-            {
-                canvas[i].gameObject.SetActive(false);
-            }
-            //ResultText.text = "WIN!!!";
+            ChangeCanvas(5);
+            canvas[5].transform.GetChild(0).gameObject.SetActive(true);
+            canvas[5].transform.GetChild(1).gameObject.SetActive(false);            
         }
-        else
+        else // 지면 Lose 띄워줌
         {
-            for (int i = 0; i < canvas.Length; i++)
-            {
-                canvas[i].gameObject.SetActive(false);
-            }
-            //ResultText.text = "LOSE...";
+            ChangeCanvas(5);
+            canvas[5].transform.GetChild(0).gameObject.SetActive(false);
+            canvas[5].transform.GetChild(1).gameObject.SetActive(true);            
         }
     }
+
     public bool Check4WhoIsWin(bool who)
     {
         // 플레이어가 안죽었다면? 플레이어 승리
@@ -274,13 +268,12 @@ public class UIManager : MonoBehaviour
     }
 
     //
-    // LOGIN SCENE
+    // LOGIN UI
     #region LOGIN SCENE & INPUT PLAYER NAME
     public void ONLOGINSCENE()
     {
         canvas[2].gameObject.SetActive(true);
     }
-
     public void OFFLOGINSCENE()
     {
         canvas[2].gameObject.SetActive(false);
@@ -293,7 +286,7 @@ public class UIManager : MonoBehaviour
     #region EXIT SCENE
     public void ONEXITSCENE()
     {
-        canvas[7].gameObject.SetActive(true);
+        ChangeCanvas(7);
         GameManager.INSTANCE.IsWindowOpen = true;
     }
     public void OFFEXITSCENE()
@@ -343,7 +336,6 @@ public class UIManager : MonoBehaviour
         }
         else //if (Player.INSTANCE.Shop4BuyAvailable == true)
         {
-            Debug.Log("2");
             Player.INSTANCE.PlayerPotion += 1;
             Player.INSTANCE.PlayerGold -= 10;
         }

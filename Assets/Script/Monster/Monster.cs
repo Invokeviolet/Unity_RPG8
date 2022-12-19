@@ -1,74 +1,67 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Monster : MonoBehaviour
 {
-
+    public int CurMobCount { get; set; }
+    public int MaxMobCount = 10;
     public bool IsDead { get; set; }
 
-    int AttackPower;
 
     MOBINFO mobInfo;
-    // 좌표 받아오기
-    public Vector3 pos { get; set; }
-    // 색상 받아오기
-    public Color prefabCol { get; set; }
-    // 몬스터 받아오기
-    public string monster { get; set; }
+
     // 체력 받아오기
     public int HP { get; set; }
-    // 경험치 받아오기
-    public int EXP { get; set; }
 
     // 몹 정보 
     public MOBINFO MOBINFO { get { return mobInfo; } set { mobInfo = value; } }
 
-    // 공격받으면 들어온 데미지만큼 HP 감소
-    public void HitMonster(int damage)
+    private void Start()
     {
-        
+        CurMobCount = MaxMobCount;
     }
-    public void IMDEAD()
+    private void Update()
     {
-        IsDead = true;
-        Destroy(this.gameObject);
-        UIManager.INSTANCE.Check4WhoIsWin(false);
-        // 2초 뒤 몬스터 잡았다는 창 띄우기
-        Invoke("UIManager.INSTANCE.RESULTSCENE()", 2f);
-        // 플레이어 경험치 증가
-        Player.INSTANCE.ExpUpdate(10);
+
     }
 
     private void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.CompareTag("Wepon")) 
+        if (other.gameObject.CompareTag("Banana"))
         {
             HP -= Player.INSTANCE.PlayerAttackPower;
             if (HP <= 0)
             {
-                IMDEAD();
+                DeadMonster();
             }
         }
-        
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.CompareTag("Player"))
+        else if (other.gameObject.CompareTag("Player"))
         {
             // 플레이어에게 데미지 주기
             int rndDamage = Random.Range(0, 10);
             GameManager.INSTANCE.GetPlayer().PlayerHP -= rndDamage;
         }
     }
-    private void OnTriggerExit(Collider other)
+    public void DeadMonster()
     {
-        if (other.gameObject.CompareTag("Player")) 
-        { 
-            // 애니메이션 또는 이펙트 재생
+        IsDead = true;
+        Destroy(this.gameObject);
+        UIManager.INSTANCE.Check4WhoIsWin(false);
+
+        CurMobCount--;
+        if (CurMobCount == 0)
+        {
+            UIManager.INSTANCE.Check4WhoIsWin(true);
+            UIManager.INSTANCE.RESULTSCENE(); // 다 잡았다! 결과창 띄워줌
         }
+        // 플레이어 경험치 증가
+        Player.INSTANCE.ExpUpdate(10);
     }
 
+    // 몬스터는 생성되면 플레이어를 찾아 이동한다.
+    // 타겟, 이동 스피드, 이동 방향    
+    // NONE, IDLE, MOVE, TRACKING, ATTACK, DIE
 }
-      
+

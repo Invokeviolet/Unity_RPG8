@@ -7,25 +7,6 @@ using UnityEngine.SceneManagement;
 
 public class MapSpawner_INGAME : MonoBehaviour
 {
-    // 맵을 싱글톤으로 선언해서 씬이동이 있어도 저장되도록 -> 플레이어 위치도 여기에 저장
-
-    // 싱글톤
-    #region 싱글톤
-
-    private static MapSpawner_INGAME Instance = null;
-    public static MapSpawner_INGAME INSTANCE
-    {
-        get
-        {
-            if (Instance == null)
-            {
-                Instance = FindObjectOfType<MapSpawner_INGAME>();
-            }
-            
-            return Instance;
-        }
-    }
-    #endregion
 
     // 시작점 도착점
     Vector3 zeroPos;
@@ -38,9 +19,7 @@ public class MapSpawner_INGAME : MonoBehaviour
     [SerializeField] MonsterMarble MonsterPrefab;
     // 맵 큐브
     [SerializeField] Cube CubePrefab;
-    // 바나나존
-    // [SerializeField] Banana BananaPrefab; 
-
+    
 
     // 1개 -> 10 x 10 배열로 받아서 생성    
     MonsterMarble MOBS = null;
@@ -62,7 +41,7 @@ public class MapSpawner_INGAME : MonoBehaviour
 
     public void Awake()
     {
-        DontDestroyOnLoad(this.gameObject);
+        // DontDestroyOnLoad(this.gameObject);
 
         // 큐브에 값 넣어야 함
         CubePrefab.transform.position = new Vector3(0f, 0f, 0f);

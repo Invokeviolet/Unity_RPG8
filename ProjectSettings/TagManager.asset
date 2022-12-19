@@ -12,8 +12,8 @@ TagManager:
   - Store
   - Cube
   - Monster
-  - Undefined
   - NPC
+  - Banana
   layers:
   - Default
   - TransparentFX

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using System;
 
 
 // 전체 데이터 관리
@@ -54,76 +54,83 @@ public class GameManager : MonoBehaviour
     public bool IsWindowOpen { get; set; }
     // 플레이어가 전투중이니?
     public bool myPlayerAction { get; set; }
+    // 플레이어가 죽었니?
+    // public bool myPlayerDead { get; set; }
 
     Player player;
     Monster monster;
     public Player GetPlayer() => player;
     public Monster GetMonster() => monster;
-    //public GameObject PlayerCam=null;
-
+    
     public int POTION;
     public int GOLD;
 
+
     private void Awake()
     {
-        DontDestroyOnLoad(this.gameObject);
+        // DontDestroyOnLoad(this.gameObject);
+       
     }
 
     private void Start()
     {
         player = FindObjectOfType<Player>();
         monster = FindObjectOfType<Monster>();
+       
         TITLESCENE();
     }
-   
 
-    /*public void BUYPOTION(string potion, string gold)
-    {        
-        UIManager.INSTANCE.HaveAGold.text = "GOLD " + potion;
-        UIManager.INSTANCE.HaveAPotion.text = "POTION " + gold;                
-    }*/
+    private void Update()
+    {
+       
+    }
 
-
-    public void TITLESCENE() // 타이틀
+    public void TITLESCENE() // 타이틀 - 로그인 버튼
     {
         // 카메라 위치
         UIManager.INSTANCE.TITLESCENE();
-        GameManager.INSTANCE.myPlayerInGame = false;
-
+        myPlayerInGame = false;
+        
     }
 
     public void INGAMESCENE() // 인게임
     {
-        // 카메라 위치
-        UIManager.INSTANCE.GENERALSCENE();
-        UIManager.INSTANCE.OFFQUESTION();
-        GameManager.INSTANCE.myPlayerInGame = true;
-        GameManager.INSTANCE.myPlayerAction = false;
+        UIManager.INSTANCE.ingame();
+        myPlayerInGame = true;
+        myPlayerAction = false;
         Debug.Log("인게임?");
         Player.INSTANCE.transform.position = Player.INSTANCE.PlayerPos.transform.position;
-
     }
 
-    public void STORESCENE() // 상점
+    public void STORESCENE() // 상점 - OK 버튼
     {
-        // 카메라 위치
-        UIManager.INSTANCE.STORESCENE();
+        UIManager.INSTANCE.store();
         UIManager.INSTANCE.OFFQUESTION();
-        GameManager.INSTANCE.myPlayerInGame = false;
-        GameManager.INSTANCE.myPlayerAction = false;
+        myPlayerInGame = false;
+        myPlayerAction = false;
     }
 
 
     public void ACTIONFORESTSCENE() // 전투
     {
-        // 카메라 위치   
-        UIManager.INSTANCE.ACTIONSCENE();
-        UIManager.INSTANCE.OFFQUESTION();
-        GameManager.INSTANCE.myPlayerInGame = false;
-        GameManager.INSTANCE.myPlayerAction = true;
+        UIManager.INSTANCE.action();
+        myPlayerInGame = false;
+        myPlayerAction = true;        
+    }
 
-        Player.INSTANCE.transform.position = Player.INSTANCE.ActionPlayerPos.transform.position;
+    public void GAMERESULTSCENE() // 전투 끝
+    {
+        Debug.Log("전두 끝!");
+    }
 
+    public void GAMECLEARSCENE() // 게임 클리어
+    {
+        UIManager.INSTANCE.GAMECLEARSCENE();
+    }
+
+    public void GAMEOVERSCENE() // 게임 오버
+    {
+        UIManager.INSTANCE.GAMEOVERSCENE();
     }
 
     /* public void LOADINGSECNE()

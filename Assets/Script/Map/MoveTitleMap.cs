@@ -30,9 +30,9 @@ public class MoveTitleMap : MonoBehaviour
         time += Time.deltaTime;
         
 
-        if (this.gameObject.transform.position.y <= 28)
+        if (this.gameObject.transform.position.y <= 35)
         {
-            myVec = new Vector3(transform.position.x, 28, transform.position.z);
+            myVec = new Vector3(transform.position.x, 35, transform.position.z);
             this.gameObject.transform.position = myVec;
         }
     }

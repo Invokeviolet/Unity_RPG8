@@ -5,14 +5,10 @@ using UnityEngine;
 public class RotateCamera : MonoBehaviour
 {
     // 마우스커서에 따라 카메라 회전
-
     public float speed = 2.5f;
     private float xRotate = 0.0f;
 
-
-
     void Update()
-
     {
         // 좌우이동 * 속도
         float yRotateSize = Input.GetAxis("Mouse X") * speed;
